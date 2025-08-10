@@ -205,6 +205,8 @@ class SVGLayoutDisplayTool(Tool):
         elif self.system_name == "English Stenotype":
             self.svg_widget.load_svg(DEFAULT_SVG, DEFAULT_SCALE)
             self.load_py_script(DEFAULT_PY)
+        else:
+            log.error("No configuration found for system name: %s", self.system_name)
         
         self.on_stroke(tuple())
 
