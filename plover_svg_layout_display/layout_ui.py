@@ -1,4 +1,4 @@
-from typing import Any, Callable, Tuple, Union
+from typing import Callable, Tuple, Union
 
 from plover import system
 from plover.engine import StenoEngine
@@ -6,9 +6,10 @@ from plover.oslayer.config import PLUGINS_PLATFORM
 from plover.gui_qt.tool import Tool
 from plover.steno import Stroke
 
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QGraphicsView
-from PyQt5.QtGui import QKeySequence, QMouseEvent, QColor
-from PyQt5.QtCore import Qt, QRect, QSettings
+from PySide6.QtWidgets import QHBoxLayout, QGraphicsView
+from PySide6.QtGui import QAction
+from PySide6.QtGui import QKeySequence, QMouseEvent
+from PySide6.QtCore import Qt, QRect, QSettings
 
 from plover_svg_layout_display.resources_rc import *
 from plover_svg_layout_display.config_ui import ConfigUI
@@ -18,14 +19,14 @@ from plover_svg_layout_display.qt_utils import load_qt_text
 
 
 STYLESHEET = "border:0px; background:transparent;"
-DEFAULT_SVG = ":/svgld/en_layout.svg"
+DEFAULT_SVG = ":/svgld/resources/en_layout.svg"
 DEFAULT_SCALE = 100
-DEFAULT_PY = ":/svgld/en_convert.py"
+DEFAULT_PY = ":/svgld/resources/en_convert.py"
 
 
 class SVGLayoutDisplayTool(Tool):
     TITLE = "SVG Layout Display"
-    ICON = ":/svgld/icon.svg"
+    ICON = ":/svgld/resources/icon.svg"
     ROLE = "svgld"
 
     def __init__(self, engine: StenoEngine) -> None:
@@ -89,11 +90,11 @@ class SVGLayoutDisplayTool(Tool):
                 settings.setValue(sys_name + "/" + key, value)
     
     def view_mouse_move(self, event: QMouseEvent) -> None:
-        if event.buttons() & Qt.LeftButton:
+        if event.buttons() & Qt.MouseButton.LeftButton:
             self.move(event.globalPos() - self.drag_position)
 
     def view_mouse_press(self, event: QMouseEvent) -> None:
-        if event.buttons() & Qt.LeftButton:
+        if event.buttons() & Qt.MouseButton.LeftButton:
             self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
     
     def setup_actions(self) -> None:
@@ -135,8 +136,8 @@ class SVGLayoutDisplayTool(Tool):
         self.trans_view.setStyleSheet(STYLESHEET)
 
     def setup_layout(self) -> None:
-        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setStyleSheet("QWidget#svgld {background:transparent;}")
 
         self.svg_widget = LayoutWidget()
@@ -152,13 +153,11 @@ class SVGLayoutDisplayTool(Tool):
         self.show()
 
     def on_config_changed(self, config: dict) -> None:
-        if "system_name" not in config:
+        new_sys_name = config.get("system_name")
+        if not new_sys_name or new_sys_name == self.system_name:
             return
-        
-        new_sys_name = config["system_name"]
-        if new_sys_name == self.system_name:
-            return
- 
+
+        self.system_name = new_sys_name
         self.reload_config()
     
     def on_settings(self) -> None:
@@ -184,7 +183,7 @@ class SVGLayoutDisplayTool(Tool):
             
             self.convert_stroke = convert_stroke
 
-        except:
+        except Exception:
             self.convert_stroke = None
 
     def reload_config(self) -> None:

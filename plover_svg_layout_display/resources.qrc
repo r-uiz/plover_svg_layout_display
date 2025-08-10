@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/svgld">
+    <file>resources/icon.svg</file>
+    <file>resources/en_convert.py</file>
+    <file>resources/en_layout.svg</file>
+    <file>resources/invalid.svg</file>
+  </qresource>
+</RCC>

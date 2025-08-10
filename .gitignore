@@ -9,4 +9,5 @@ resources_rc.py
 
 # Environment
 .vscode/
+.venv/
 venv/
