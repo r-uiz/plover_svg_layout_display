@@ -5,6 +5,7 @@ from plover.engine import StenoEngine
 from plover.oslayer.config import PLUGINS_PLATFORM
 from plover.gui_qt.tool import Tool
 from plover.steno import Stroke
+from plover import log
 
 from PySide6.QtWidgets import QHBoxLayout, QGraphicsView
 from PySide6.QtGui import QAction
@@ -183,7 +184,8 @@ class SVGLayoutDisplayTool(Tool):
             
             self.convert_stroke = convert_stroke
 
-        except Exception:
+        except Exception as e:
+            log.error("loading Python script from %s failed: %s", py_path, e, exc_info=True)
             self.convert_stroke = None
 
     def reload_config(self) -> None:

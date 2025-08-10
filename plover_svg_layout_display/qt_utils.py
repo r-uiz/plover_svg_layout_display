@@ -1,3 +1,4 @@
+from plover import log
 from PySide6.QtCore import QFile, QIODevice, QTextStream
 
 
@@ -12,5 +13,6 @@ def load_qt_text(text_path: str) -> str:
             text = text_stream.readAll()
             file.close()
         return text
-    except Exception:
+    except Exception as e:
+        log.error("Failed to load Qt text from %s: %s", text_path, e, exc_info=True)
         return ""

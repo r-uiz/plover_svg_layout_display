@@ -1,3 +1,4 @@
+from plover import log
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QByteArray, Qt, QRect, QPoint
 from PySide6.QtSvgWidgets import QSvgWidget
@@ -49,14 +50,15 @@ class LayoutWidget(QSvgWidget):
             scale_ratio = scale / 100
             new_size = self.renderer().defaultSize()
             new_size.scale(
-                int(new_size.width() * scale_ratio), 
-                int(new_size.height() * scale_ratio), 
+                int(new_size.width() * scale_ratio),
+                int(new_size.height() * scale_ratio),
                 Qt.AspectRatioMode.KeepAspectRatio
             )
-            
+
             self.resize(new_size)
             self.renderer().setViewBox(QRect(QPoint(0, 0), new_size))
             self.svg_size = new_size
             self.is_invalid = invalid
-        except Exception:
+        except Exception as e:
+            log.error("Failed to load SVG from %s: %s", path, e, exc_info=True)
             self.load_invalid(scale)
