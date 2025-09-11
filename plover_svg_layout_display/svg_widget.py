@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QSizePolicy
-from PyQt5.QtCore import QByteArray, Qt, QRect, QPoint
-from PyQt5.QtSvg import QSvgWidget
+from plover import log
+from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QByteArray, Qt, QRect, QPoint
+from PySide6.QtSvgWidgets import QSvgWidget
 
 from typing import List
 
@@ -16,10 +17,10 @@ class LayoutWidget(QSvgWidget):
         super().__init__(parent)
 
         self.setObjectName("layout_widget")
-        self.setContextMenuPolicy(Qt.NoContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
         self.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("border:0px; background:transparent;")
-        self.renderer().setAspectRatioMode(Qt.KeepAspectRatio)
+        self.renderer().setAspectRatioMode(Qt.AspectRatioMode.KeepAspectRatio)
         self.is_invalid = False
         self.svg_size = None
 
@@ -49,14 +50,15 @@ class LayoutWidget(QSvgWidget):
             scale_ratio = scale / 100
             new_size = self.renderer().defaultSize()
             new_size.scale(
-                int(new_size.width() * scale_ratio), 
-                int(new_size.height() * scale_ratio), 
-                Qt.KeepAspectRatio
+                int(new_size.width() * scale_ratio),
+                int(new_size.height() * scale_ratio),
+                Qt.AspectRatioMode.KeepAspectRatio
             )
-            
+
             self.resize(new_size)
             self.renderer().setViewBox(QRect(QPoint(0, 0), new_size))
             self.svg_size = new_size
             self.is_invalid = invalid
-        except:
+        except Exception as e:
+            log.error("Failed to load SVG from %s: %s", path, e, exc_info=True)
             self.load_invalid(scale)

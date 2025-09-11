@@ -1,5 +1,5 @@
 from typing import List, Dict
-from lxml import etree as ET
+import lxml.etree as ET
 
 from plover_svg_layout_display.qt_utils import load_qt_text
 from plover_svg_layout_display.resources_rc import *

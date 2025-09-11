@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QDialog, QWidget, QLabel, QDialogButtonBox, QGridLayout,
     QGroupBox, QCheckBox, QVBoxLayout, QLineEdit, QScrollArea,
     QFileDialog, QPushButton, QSpinBox
 )
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 from plover_svg_layout_display.layout_config import (
     CONFIG_FILE_PARAMS, SYSTEM_NAME_PLACEHOLDER, SYSTEM_PREFIX, 

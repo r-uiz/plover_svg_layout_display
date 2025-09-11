@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-	"plover[gui_qt]>=4.0.0.dev10",
-	"setuptools>=38.2.4",
+	"plover[gui_qt]>=5.0.0.dev3",
+	"setuptools>=79.0.0",
 	"wheel",
 ]
 build-backend = "setuptools.build_meta"
