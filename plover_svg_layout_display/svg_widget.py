@@ -34,7 +34,21 @@ class LayoutWidget(QSvgWidget):
 
         self.load(QByteArray(str.encode(svg_str, "utf-8")))
         self.update()
-    
+
+    def update_blend(
+        self,
+        base_ids: List[str],
+        fade_ids: List[str],
+        top_ids: List[str],
+        alpha: float
+    ) -> None:
+        if self.is_invalid:
+            return
+
+        svg_str = self.svg_parser.get_blend_svg(base_ids, fade_ids, top_ids, alpha)
+        self.load(QByteArray(str.encode(svg_str, "utf-8")))
+        self.update()
+
     def load_invalid(self, scale: int = 100) -> None:
         self.load_svg(DUMMY_PATH, scale, True)
 

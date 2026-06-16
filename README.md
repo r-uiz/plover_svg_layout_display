@@ -1,7 +1,30 @@
-# Plover SVG Layout Display
+# Plover SVG Layout Display (Uni fork)
 
-[![PyPI](https://img.shields.io/pypi/v/plover-svg-layout-display)](https://pypi.org/project/plover-svg-layout-display/)
-![GitHub](https://img.shields.io/github/license/Kaoffie/plover_svg_layout_display)
+> **Fork of [opensteno/plover_svg_layout_display](https://github.com/opensteno/plover_svg_layout_display)** with
+> built-in **Stenokeyboards Uni v4** layouts and a few quality-of-life features.
+> Upstream only ships the classic split board.
+
+## What this fork adds
+
+- **Bundled Uni v4 presets.** A **Layout Preset** dropdown (`Ctrl+S`) picks a
+  style - **House** (B&W + egg-yolk gold), **Mono** (pure monochrome), or
+  **Inverted** (dark caps that glow gold, for a floating overlay). No file paths
+  to wire up; the SVGs ship in the package (`resources/uni/`).
+- **Labels** and **Finger guides** checkboxes compose on top of the style.
+  Finger guides are red dots marking the steno home/resting position.
+- **Auto-clear After** (ms, `0` = Off): Plover emits `stroked` per committed
+  chord, not key up/down, so a highlight otherwise stays lit until the next
+  stroke. This clears it after a delay.
+- **Fade out on clear**: a snappy cross-fade of the chord back to neutral
+  instead of a hard cut (toggle).
+- **Double-click to close** the frameless display (in addition to `Ctrl+X`).
+
+The Uni presets are generated from one geometry definition by
+`resources/uni/generate.mjs` (`node generate.mjs`) - 3 styles x labels x guides
+= 12 SVGs plus a shared `uni_convert.py`. Install into Plover for development
+with `./dev-install.sh`.
+
+---
 
 Display the last stroke in Plover, but ✨ *fancier* ✨
 

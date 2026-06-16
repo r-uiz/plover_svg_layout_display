@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #faf8f3; }
+      .row { display: flex; align-items: center; gap: 20px; padding: 12px 22px; }
+      .row.dark { background: #1b1916; } .row.dark .name { color: #e8e3d8; }
+      .name { width: 200px; font-size: 13px; color: #444; }
+      .board { width: 540px; } svg { width: 100%; height: auto; display: block; }
+      h2 { margin: 16px 22px 0; font-size: 13px; color: #666; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const PRESSED = new Set(["S-", "K-", "*", "A-", "-T", "-E"]);
+      const STENO_OF = {
+        ls1: "S-", ls2: "S-", lt: "T-", lk: "K-", lp: "P-", lw: "W-", lh: "H-", lr: "R-",
+        star1: "*", star2: "*", star3: "*", star4: "*",
+        rf: "-F", rr: "-R", rp: "-P", rb: "-B", rl: "-L", rg: "-G", rt: "-T", rs: "-S", rd: "-D", rz: "-Z",
+        num1: "#", la: "A-", lo: "O-", re: "-E", ru: "-U", num2: "#",
+      };
+      const FILES = [
+        ["House labels+guides", "uni_house_labels_guides.svg", false],
+        ["House guides only", "uni_house_guides.svg", false],
+        ["Mono labels+guides", "uni_mono_labels_guides.svg", false],
+        ["Inverted labels+guides", "uni_inverted_labels_guides.svg", true],
+        ["Inverted guides only", "uni_inverted_guides.svg", true],
+      ];
+      (async () => {
+        const root = document.getElementById("root");
+        root.insertAdjacentHTML("beforeend", "<h2>Sample stroke S K * A -T -E - red dots = finger rest guides</h2>");
+        for (const [name, file, dark] of FILES) {
+          const txt = await (await fetch(file)).text();
+          const svg = new DOMParser().parseFromString(txt, "image/svg+xml").documentElement;
+          for (const g of [...svg.querySelectorAll("g[id]")]) {
+            if (g.id === "guides") continue; // always shown
+            const base = g.id.endsWith("_n") ? g.id.slice(0, -2) : g.id;
+            const pressed = PRESSED.has(STENO_OF[base]);
+            if (pressed === g.id.endsWith("_n")) g.remove();
+          }
+          const row = document.createElement("div");
+          row.className = "row" + (dark ? " dark" : "");
+          row.innerHTML = `<div class="name">${name}</div><div class="board">${svg.outerHTML}</div>`;
+          root.appendChild(row);
+        }
+      })();
+    </script>
+  </body>
+</html>

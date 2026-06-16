@@ -49,3 +49,31 @@ class SVGParser:
     
     def get_whole_svg(self) -> str:
         return self.get_svg_content(self.group_svgs.keys())
+
+    def get_blend_svg(
+        self,
+        base_ids: List[str],
+        fade_ids: List[str],
+        top_ids: List[str],
+        alpha: float
+    ) -> str:
+        # Cross-fade for the auto-clear: neutral caps underneath, the pressed
+        # caps drawn on top at `alpha` (1 -> 0 reveals neutral in place), then
+        # any always-on groups (finger guides) above everything.
+        def join(ids):
+            return "\n".join(
+                self.group_svgs[id] for id in ids if id in self.group_svgs
+            )
+
+        content = join(base_ids)
+        fade = join(fade_ids)
+        if fade:
+            content += "\n<g opacity=\"%.3f\">\n%s\n</g>" % (alpha, fade)
+        top = join(top_ids)
+        if top:
+            content += "\n" + top
+
+        return SVG_TEMPLATE.format(
+            header=self.svg_attribs,
+            content=content
+        )

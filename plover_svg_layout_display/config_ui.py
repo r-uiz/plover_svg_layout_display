@@ -1,14 +1,14 @@
 from PySide6.QtWidgets import (
     QDialog, QWidget, QLabel, QDialogButtonBox, QGridLayout,
     QGroupBox, QCheckBox, QVBoxLayout, QLineEdit, QScrollArea,
-    QFileDialog, QPushButton, QSpinBox
+    QFileDialog, QPushButton, QSpinBox, QComboBox
 )
 from PySide6.QtCore import Qt
 
 from plover_svg_layout_display.layout_config import (
-    CONFIG_FILE_PARAMS, SYSTEM_NAME_PLACEHOLDER, SYSTEM_PREFIX, 
+    CONFIG_FILE_PARAMS, SYSTEM_NAME_PLACEHOLDER, SYSTEM_PREFIX,
     LayoutConfig, CONFIG_NAMES, CONFIG_ORDER, CONFIG_TYPES,
-    CONFIG_ITEMS
+    CONFIG_ITEMS, CONFIG_CHOICES, CONFIG_INT_PLAIN
 )
 
 
@@ -19,9 +19,9 @@ PLAIN_TEXT_DATA_HEIGHT = 200
 class ConfigUI(QDialog):
 
     def __init__(
-        self, 
-        temp_config: LayoutConfig, 
-        system_name: str, 
+        self,
+        temp_config: LayoutConfig,
+        system_name: str,
         parent: QWidget = None
     ) -> None:
         super().__init__(parent)
@@ -30,9 +30,9 @@ class ConfigUI(QDialog):
         self.setup_window()
 
     def select_file(
-        self, 
-        prompt: str, 
-        file_type: str, 
+        self,
+        prompt: str,
+        file_type: str,
         text_field: QLineEdit
     ) -> None:
         def func() -> None:
@@ -42,7 +42,7 @@ class ConfigUI(QDialog):
 
             if path:
                 text_field.setText(path)
-        
+
         return func
 
     def setup_window(self) -> None:
@@ -61,7 +61,7 @@ class ConfigUI(QDialog):
                 if current_groupbox is not None:
                     current_groupbox.setLayout(current_grid_layout)
                     self.scroll_layout.addWidget(current_groupbox)
-                
+
                 current_grid_row = 0
                 current_groupbox = QGroupBox()
                 current_groupbox.setTitle(config_name)
@@ -103,7 +103,16 @@ class ConfigUI(QDialog):
             if field_value is None and config_name in CONFIG_ITEMS:
                 field_value = CONFIG_ITEMS[config_name]
 
-            if field_type == bool:
+            if config_name in CONFIG_CHOICES:
+                field_data = QComboBox()
+                selected_index = 0
+                for index, (label, value) in enumerate(CONFIG_CHOICES[config_name]):
+                    field_data.addItem(label, value)
+                    if value == field_value:
+                        selected_index = index
+                field_data.setCurrentIndex(selected_index)
+
+            elif field_type == bool:
                 field_data = QCheckBox()
                 field_data.setChecked(field_value)
 
@@ -119,7 +128,15 @@ class ConfigUI(QDialog):
 
                 field_data.setText(field_value)
 
-            # Note that all integer configs are percentages (for now)
+            elif field_type == int and config_name in CONFIG_INT_PLAIN:
+                field_data = QSpinBox()
+                field_data.setRange(0, 60000)
+                field_data.setSingleStep(100)
+                field_data.setSuffix(" ms")
+                field_data.setSpecialValueText("Off")  # shown at the minimum (0)
+                field_data.setValue(field_value or 0)
+
+            # Note that the remaining integer configs are percentages
             # So we're hardcoding the limits
             elif field_type == int:
                 field_data = QSpinBox()
@@ -154,7 +171,7 @@ class ConfigUI(QDialog):
 
         self.button_box = QDialogButtonBox(
             (
-                QDialogButtonBox.Cancel | 
+                QDialogButtonBox.Cancel |
                 QDialogButtonBox.Ok
             ),
             parent=self
@@ -176,7 +193,9 @@ class ConfigUI(QDialog):
             field_data = self.fields[config_name]
             field_value = None
 
-            if field_type == bool:
+            if config_name in CONFIG_CHOICES:
+                field_value = field_data.currentData()
+            elif field_type == bool:
                 field_value = field_data.isChecked()
             elif field_type == int:
                 field_value = field_data.value()
@@ -191,5 +210,5 @@ class ConfigUI(QDialog):
                     self.temp_config.system_map[self.system_name][config_name] = field_value
                 else:
                     setattr(self.temp_config, config_name, field_value)
-        
+
         self.accept()
