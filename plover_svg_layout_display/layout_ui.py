@@ -304,13 +304,19 @@ class SVGLayoutDisplayTool(Tool):
             svg_path = preset_svg if preset_svg else sys_config.get("system_svg")
             py_path = preset_py if preset_py else sys_config.get("system_py")
 
-            if svg_path is not None:
-                self.svg_widget.load_svg(
-                    svg_path,
-                    sys_config.get("system_scale", 100)
-                )
+            # Nothing usable configured (e.g. no preset picked yet) - show the
+            # stock board rather than a blank/invalid placeholder.
+            if not svg_path:
+                svg_path = DEFAULT_SVG
+                if not py_path:
+                    py_path = DEFAULT_PY
 
-            if py_path is not None:
+            self.svg_widget.load_svg(
+                svg_path,
+                sys_config.get("system_scale", 100)
+            )
+
+            if py_path:
                 self.load_py_script(py_path)
 
         elif self.system_name == "English Stenotype":

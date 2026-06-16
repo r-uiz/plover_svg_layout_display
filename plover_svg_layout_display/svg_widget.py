@@ -8,7 +8,7 @@ from typing import List
 from plover_svg_layout_display.svg_parser import SVGParser
 
 
-DUMMY_PATH = ":/svgld/invalid.svg"
+DUMMY_PATH = ":/svgld/resources/invalid.svg"
 
 
 class LayoutWidget(QSvgWidget):
@@ -75,4 +75,7 @@ class LayoutWidget(QSvgWidget):
             self.is_invalid = invalid
         except Exception as e:
             log.error("Failed to load SVG from %s: %s", path, e, exc_info=True)
-            self.load_invalid(scale)
+            # Guard against load_invalid -> load_svg -> load_invalid recursion
+            # if even the dummy fails to load.
+            if not invalid:
+                self.load_invalid(scale)
